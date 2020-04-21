@@ -13,6 +13,15 @@ export const addPost = (post) => ({
     }
 });
 
+export const editPost = (post) => ({
+    type: EDIT_POST,
+    post: {
+        id: post.id,
+        title: post.title,
+        text: post.text
+    }
+});
+
 const initialState = [
     {
         id: 1,
@@ -25,6 +34,10 @@ export default function posts(state = initialState, action) {
     switch (action.type) {
         case ADD_POST:
             return state.concat(action.post);
+        case EDIT_POST:
+            return state.map(post => 
+                post.id === action.post.id ? { ...post, title: action.post.title, text: action.post.text } : post
+            );
         default:
             return state;
     }

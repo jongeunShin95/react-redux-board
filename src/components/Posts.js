@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 
-const PostItem = React.memo(function PostItem({ post }) {
+const PostItem = React.memo(function PostItem({ post, onGetPostById, onEditPostById }) {
     return (
         <li>
-            {post.title}({post.text})
+            {post.title}({post.text})<button onClick={() => onGetPostById(post.id)}>가져오기</button><button onClick={() => onEditPostById(post.id)}>수정하기</button>
         </li>
     );
 });
 
-const PostList = React.memo(function PostList({ posts }) {
+const PostList = React.memo(function PostList({ posts, onGetPostById, onEditPostById }) {
     return (
         <ul>
             {posts.map((post) => (
-                <PostItem key={post.id} post={post} />
+                <PostItem key={post.id} post={post} onGetPostById={onGetPostById} onEditPostById={onEditPostById} />
             ))}
         </ul>
     );
 });
 
-function Posts({ posts, onAddPost }) {
+function Posts({ posts, onAddPost, onEditPost }) {
     const [post, setPost] = useState({
         title: '',
         text: ''
@@ -39,15 +39,30 @@ function Posts({ posts, onAddPost }) {
             text: ''
         })
     }
+    const onGetPostById = id => {
+        const getPost = posts.filter(post => post.id === id)[0];
+        setPost({
+            title: getPost.title,
+            text: getPost.text
+        });
+    }
+    const onEditPostById = id => {
+        post['id'] = id;
+        onEditPost(post);
+        setPost({
+            title: '',
+            text: ''
+        });
+    }
 
     return (
         <div>
             <form onSubmit={onSubmit}>
                 <input name="title" value={title} onChange={onChange} />
                 <textarea name="text" value={text} onChange={onChange} />
-                <button type="submit">게시글 등록</button>
+                <button type="submit">게시판 등록</button>
             </form>
-            <PostList posts={posts} />
+            <PostList posts={posts} onGetPostById={onGetPostById} onEditPostById={onEditPostById} />
         </div>
     );
 }
